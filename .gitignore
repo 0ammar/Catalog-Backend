@@ -1,0 +1,45 @@
+﻿####################################
+# ASP.NET Core - Clean GitIgnore
+####################################
+
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+
+# User-specific files
+*.csproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code settings
+.vscode/
+
+# Visual Studio settings
+.vs/
+
+# Logs
+Logs/
+
+# Secrets
+CatalogKeys/
+
+# Local dev settings
+appsettings.json
+Properties/launchSettings.json
+
+# ❌ Ignore entire wwwroot folder
+!wwwroot/StaticFiles/**
+!wwwroot/UploadedImages/no-image.png
+wwwroot/*
+
+
+
+# Node/npm (in case of frontend inside backend)
+node_modules/
+
+# Publish output
+publish/
