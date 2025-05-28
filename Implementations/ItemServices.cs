@@ -43,14 +43,7 @@ namespace Backend.Implementations
 
 
 
-        public async Task<List<GetItemsDto>> GetItemsWithPaginationAsync(
-       string groupId,
-       string subOneId,
-       string? subTwoId,
-       string? subThreeId,
-       HttpRequest request,
-       int page = 1,
-       int pageSize = 30)
+        public async Task<List<GetItemsDto>> GetItemsWithPaginationAsync( string groupId, string subOneId, string? subTwoId, string? subThreeId, HttpRequest request, int page = 1, int pageSize = 30)
         {
             var baseQuery = _context.Items
                 .Include(i => i.Status)
@@ -80,17 +73,7 @@ namespace Backend.Implementations
             return pagedItems.Select(i => MapToDto(i, request)).ToList();
         }
 
-
-
-        public async Task<List<GetItemsDto>> SearchItemsAsync(
-    string term,
-    string groupId,
-    string subOneId,
-    string? subTwoId,
-    string? subThreeId,
-    HttpRequest request,
-    int page = 1,
-    int pageSize = 30)
+        public async Task<List<GetItemsDto>> SearchItemsAsync(string term,string groupId,string subOneId,string? subTwoId,string? subThreeId,HttpRequest request,int page = 1,int pageSize = 30)
         {
             var lowered = term.Trim().ToLower();
 

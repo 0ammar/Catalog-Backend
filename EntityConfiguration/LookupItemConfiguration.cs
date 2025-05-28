@@ -62,7 +62,7 @@ namespace Backend.EntityConfiguration
                     Id = "4",
                     Name = "FocusedItem",
                     Code = "F",
-                    IconPath = "/StaticFiles/focused-icon.png",
+                    IconPath = "/StaticFiles/Focused-icon.png",
                     LookupTypeId = "1"
                 }
             );

@@ -20,10 +20,9 @@ namespace Backend.Interfaces
         Task UploadSubTwoImageAsync(string id, IFormFile file);
         Task UploadSubThreeImageAsync(string id, IFormFile file);
 
-        // ✅ Delete image from category
-        Task<bool> DeleteGroupImageAsync(string id, string imageUrl);
-        Task<bool> DeleteSubOneImageAsync(string id, string imageUrl);
-        Task<bool> DeleteSubTwoImageAsync(string id, string imageUrl);
-        Task<bool> DeleteSubThreeImageAsync(string id, string imageUrl);
+        Task<string> DeleteGroupImageAsync(string id, string imageUrl, HttpRequest request);
+        Task<string> DeleteSubOneImageAsync(string id, string imageUrl, HttpRequest request);
+        Task<string> DeleteSubTwoImageAsync(string id, string imageUrl, HttpRequest request);
+        Task<string> DeleteSubThreeImageAsync(string id, string imageUrl, HttpRequest request);
     }
 }

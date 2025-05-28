@@ -1,4 +1,5 @@
-﻿using Backend.DbContexts;
+﻿using Azure.Core;
+using Backend.DbContexts;
 using Backend.DTOs.Categories;
 using Backend.Helpers;
 using Backend.Interfaces;
@@ -9,15 +10,15 @@ namespace Backend.Implementations
     public class CategoriesServices : ICategoriesServices
     {
         private readonly CatalogContext _context;
-        private readonly string _imagesFolderPath;
+        private readonly string _categoryImagesPath;
 
         public CategoriesServices(CatalogContext context, IWebHostEnvironment env)
         {
             _context = context;
-            _imagesFolderPath = Path.Combine(env.WebRootPath, "UploadedImages");
+            _categoryImagesPath = Path.Combine(env.WebRootPath, "CategoriesImages");
 
-            if (!Directory.Exists(_imagesFolderPath))
-                Directory.CreateDirectory(_imagesFolderPath);
+            if (!Directory.Exists(_categoryImagesPath))
+                Directory.CreateDirectory(_categoryImagesPath);
         }
 
         // ✅ Get Groups
@@ -28,7 +29,7 @@ namespace Backend.Implementations
             {
                 Id = g.Id,
                 Name = g.Name,
-                ImageUrl = UrlHelper.GetItemImageUrl(g.Image, request)
+                ImageUrl = UrlHelper.GetCategoryImageUrl(g.Image, request)
             }).ToList();
         }
 
@@ -47,7 +48,7 @@ namespace Backend.Implementations
             {
                 Id = s.Id,
                 Name = s.Name,
-                ImageUrl = UrlHelper.GetItemImageUrl(s.Image, request)
+                ImageUrl = UrlHelper.GetCategoryImageUrl(s.Image, request)
             }).ToList();
         }
 
@@ -69,7 +70,7 @@ namespace Backend.Implementations
             {
                 Id = st.Id,
                 Name = st.Name,
-                ImageUrl = UrlHelper.GetItemImageUrl(st.Image, request)
+                ImageUrl = UrlHelper.GetCategoryImageUrl(st.Image, request)
             }).ToList();
         }
 
@@ -91,7 +92,7 @@ namespace Backend.Implementations
             {
                 Id = st.Id,
                 Name = st.Name,
-                ImageUrl = UrlHelper.GetItemImageUrl(st.Image, request)
+                ImageUrl = UrlHelper.GetCategoryImageUrl(st.Image, request)
             }).ToList();
         }
 
@@ -101,7 +102,7 @@ namespace Backend.Implementations
             var group = await _context.Groups.FindAsync(id)
                 ?? throw new KeyNotFoundException("Group doesn't exist");
 
-            if (!string.IsNullOrEmpty(group.Image))
+            if (!string.IsNullOrEmpty(group.Image) && group.Image != "no-image.png")
                 throw new InvalidOperationException("Group already has image");
 
             group.Image = await UploadCategoryImageAsync(file);
@@ -113,7 +114,7 @@ namespace Backend.Implementations
             var subOne = await _context.SubOnes.FindAsync(id)
                 ?? throw new KeyNotFoundException("SubOne doesn't exist");
 
-            if (!string.IsNullOrEmpty(subOne.Image))
+            if (!string.IsNullOrEmpty(subOne.Image)  && subOne.Image != "no-image.png")
                 throw new InvalidOperationException("SubOne already has image");
 
             subOne.Image = await UploadCategoryImageAsync(file);
@@ -125,7 +126,7 @@ namespace Backend.Implementations
             var subTwo = await _context.SubTwos.FindAsync(id)
                 ?? throw new KeyNotFoundException("SubTwo doesn't exist");
 
-            if (!string.IsNullOrEmpty(subTwo.Image))
+            if (!string.IsNullOrEmpty(subTwo.Image)  && subTwo.Image != "no-image.png")
                 throw new InvalidOperationException("SubTwo already has image");
 
             subTwo.Image = await UploadCategoryImageAsync(file);
@@ -137,7 +138,7 @@ namespace Backend.Implementations
             var subThree = await _context.SubThrees.FindAsync(id)
                 ?? throw new KeyNotFoundException("SubThree doesn't exist");
 
-            if (!string.IsNullOrEmpty(subThree.Image))
+            if (!string.IsNullOrEmpty(subThree.Image)  && subThree.Image != "no-image.png")
                 throw new InvalidOperationException("SubThree already has image");
 
             subThree.Image = await UploadCategoryImageAsync(file);
@@ -145,67 +146,83 @@ namespace Backend.Implementations
         }
 
         // ✅ Delete Images
-        public async Task<bool> DeleteGroupImageAsync(string id, string imageUrl)
+        public async Task<string> DeleteGroupImageAsync(string id, string imageUrl, HttpRequest request)
         {
             var group = await _context.Groups.FindAsync(id)
                 ?? throw new KeyNotFoundException("Group doesn't exist");
 
-            if (string.IsNullOrEmpty(group.Image) || group.Image != imageUrl)
+            if (string.IsNullOrWhiteSpace(group.Image) || group.Image != imageUrl)
                 throw new InvalidOperationException("Image not found or doesn't match");
 
             DeleteCategoryImage(group.Image);
-            group.Image = null!;
+
+            group.Image = "no-image.png";
             await _context.SaveChangesAsync();
-            return true;
+
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+            return UrlHelper.GetCategoryImageUrl(null, request);
         }
 
-        public async Task<bool> DeleteSubOneImageAsync(string id, string imageUrl)
+
+        public async Task<string> DeleteSubOneImageAsync(string id, string imageUrl, HttpRequest request)
         {
             var subOne = await _context.SubOnes.FindAsync(id)
                 ?? throw new KeyNotFoundException("SubOne doesn't exist");
 
-            if (string.IsNullOrEmpty(subOne.Image) || subOne.Image != imageUrl)
+            if (string.IsNullOrWhiteSpace(subOne.Image) || subOne.Image != imageUrl)
                 throw new InvalidOperationException("Image not found or doesn't match");
 
             DeleteCategoryImage(subOne.Image);
-            subOne.Image = null!;
+
+            subOne.Image = "no-image.png";
             await _context.SaveChangesAsync();
-            return true;
+
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+            return UrlHelper.GetCategoryImageUrl(null, request);
         }
 
-        public async Task<bool> DeleteSubTwoImageAsync(string id, string imageUrl)
+
+        public async Task<string> DeleteSubTwoImageAsync(string id, string imageUrl, HttpRequest request)
         {
             var subTwo = await _context.SubTwos.FindAsync(id)
                 ?? throw new KeyNotFoundException("SubTwo doesn't exist");
 
-            if (string.IsNullOrEmpty(subTwo.Image) || subTwo.Image != imageUrl)
+            if (string.IsNullOrWhiteSpace(subTwo.Image) || subTwo.Image != imageUrl)
                 throw new InvalidOperationException("Image not found or doesn't match");
 
             DeleteCategoryImage(subTwo.Image);
-            subTwo.Image = null!;
+
+            subTwo.Image = "no-image.png";
             await _context.SaveChangesAsync();
-            return true;
+
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+            return UrlHelper.GetCategoryImageUrl(null, request);
         }
 
-        public async Task<bool> DeleteSubThreeImageAsync(string id, string imageUrl)
+
+        public async Task<string> DeleteSubThreeImageAsync(string id, string imageUrl, HttpRequest request)
         {
             var subThree = await _context.SubThrees.FindAsync(id)
                 ?? throw new KeyNotFoundException("SubThree doesn't exist");
 
-            if (string.IsNullOrEmpty(subThree.Image) || subThree.Image != imageUrl)
+            if (string.IsNullOrWhiteSpace(subThree.Image) || subThree.Image != imageUrl)
                 throw new InvalidOperationException("Image not found or doesn't match");
 
             DeleteCategoryImage(subThree.Image);
-            subThree.Image = null!;
+
+            subThree.Image = "no-image.png";
             await _context.SaveChangesAsync();
-            return true;
+
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+            return UrlHelper.GetCategoryImageUrl(null, request);
         }
+
 
         // 📁 Helpers
         private async Task<string> UploadCategoryImageAsync(IFormFile file)
         {
             var fileName = FileHelper.GenerateImageFileName(file);
-            var savePath = FileHelper.GetImageSavePath(_imagesFolderPath, fileName);
+            var savePath = FileHelper.GetImageSavePath(_categoryImagesPath, fileName);
             await ImageHelper.CompressAndSaveAsync(file, savePath);
             return fileName;
         }
@@ -214,7 +231,7 @@ namespace Backend.Implementations
         {
             if (string.IsNullOrEmpty(fileName)) return;
 
-            var path = Path.Combine(_imagesFolderPath, fileName);
+            var path = Path.Combine(_categoryImagesPath, fileName);
             if (File.Exists(path))
                 File.Delete(path);
         }

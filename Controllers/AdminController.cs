@@ -1,4 +1,5 @@
-﻿using Backend.DTOs.Items;
+﻿using System.Text.Json;
+using Backend.DTOs.Items;
 using Backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ namespace AlmutasaweqCatalog.Controllers
 	[ApiController]
 	[ApiExplorerSettings(GroupName = "v1")]
 	[Tags("Admin Controller")]
-	[Authorize(Roles = "Admin")]
 	public class AdminController(ICategoriesServices _categoriesServices, IItemServices _itemServices) : ControllerBase
 	{
 
@@ -87,82 +87,70 @@ namespace AlmutasaweqCatalog.Controllers
 		}
 
 
-		/// <summary>
-		/// Delete the image of a Group category.
-		/// </summary>
-		[HttpDelete("group/{id}")]
-		public async Task<IActionResult> DeleteGroupImage(string id, [FromQuery] string imageUrl)
-		{
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(imageUrl)) return BadRequest("Invalid input.");
-            Log.Information("Deleting image for Group ID {Id}", id);
+        /// <summary>
+        /// Delete the image of a Group category.
+        /// </summary>
+        [HttpDelete("group/{id}")]
+        public async Task<IActionResult> DeleteGroupImage(string id, [FromQuery] string imageUrl)
+        {
+            try
+            {
+                var newImageUrl = await _categoriesServices.DeleteGroupImageAsync(id, imageUrl, Request);
+                return Ok(new { imageUrl = newImageUrl });
+            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
 
-			try
-			{
-				await _categoriesServices.DeleteGroupImageAsync(id, imageUrl);
-				return Ok("Image deleted successfully.");
-			}
-			catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
-			catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
-		}
+        /// <summary>
+        /// Delete the image of a SubOne category.
+        /// </summary>
+        [HttpDelete("subone/{id}")]
+        public async Task<IActionResult> DeleteSubOneImage(string id, [FromQuery] string imageUrl)
+        {
+            try
+            {
+                var newImageUrl = await _categoriesServices.DeleteSubOneImageAsync(id, imageUrl, Request);
+                return Ok(new { imageUrl = newImageUrl });
+            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
 
-		/// <summary>
-		/// Delete the image of a SubOne category.
-		/// </summary>
-		[HttpDelete("subone/{id}")]
-		public async Task<IActionResult> DeleteSubOneImage(string id, [FromQuery] string imageUrl)
-		{
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(imageUrl)) return BadRequest("Invalid input.");
-            Log.Information("Deleting image for SubOne ID {Id}", id);
+        /// <summary>
+        /// Delete the image of a SubTwo category.
+        /// </summary>
+        [HttpDelete("subtwo/{id}")]
+        public async Task<IActionResult> DeleteSubTwoImage(string id, [FromQuery] string imageUrl)
+        {
+            try
+            {
+                var newImageUrl = await _categoriesServices.DeleteSubTwoImageAsync(id, imageUrl, Request);
+                return Ok(new { imageUrl = newImageUrl });
+            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
 
-			try
-			{
-				await _categoriesServices.DeleteSubOneImageAsync(id, imageUrl);
-				return Ok("Image deleted successfully.");
-			}
-			catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
-			catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
-		}
+        /// <summary>
+        /// Delete the image of a SubThree category.
+        /// </summary>
+        [HttpDelete("subthree/{id}")]
+        public async Task<IActionResult> DeleteSubThreeImage(string id, [FromQuery] string imageUrl)
+        {
+            try
+            {
+                var newImageUrl = await _categoriesServices.DeleteSubThreeImageAsync(id, imageUrl, Request);
+                return Ok(new { imageUrl = newImageUrl });
+            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
 
-		/// <summary>
-		/// Delete the image of a SubTwo category.
-		/// </summary>
-		[HttpDelete("subtwo/{id}")]
-		public async Task<IActionResult> DeleteSubTwoImage(string id, [FromQuery] string imageUrl)
-		{
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(imageUrl)) return BadRequest("Invalid input.");
-            Log.Information("Deleting image for SubTwo ID {Id}", id);
-
-			try
-			{
-				await _categoriesServices.DeleteSubTwoImageAsync(id, imageUrl);
-				return Ok("Image deleted successfully.");
-			}
-			catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
-			catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
-		}
-
-		/// <summary>
-		/// Delete the image of a SubThree category.
-		/// </summary>
-		[HttpDelete("subthree/{id}")]
-		public async Task<IActionResult> DeleteSubThreeImage(string id, [FromQuery] string imageUrl)
-		{
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(imageUrl)) return BadRequest("Invalid input.");
-            Log.Information("Deleting image for SubThree ID {Id}", id);
-
-			try
-			{
-				await _categoriesServices.DeleteSubThreeImageAsync(id, imageUrl);
-				return Ok("Image deleted successfully.");
-			}
-			catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
-			catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
-		}
-
-		/// <summary>
-		/// Get all images for an item (without other details).
-		/// </summary>
-		[HttpGet("items/{itemNo}/images")]
+        /// <summary>
+        /// Get all images for an item (without other details).
+        /// </summary>
+        [HttpGet("items/{itemNo}/images")]
 		public async Task<IActionResult> GetItemImages(string itemNo)
 		{
 			if (string.IsNullOrWhiteSpace(itemNo))
@@ -177,7 +165,7 @@ namespace AlmutasaweqCatalog.Controllers
 		}
 
 		/// <summary>
-		/// Add new images and/or description to an existing item.
+		/// Add new images an existing item.
 		/// </summary>
 		[HttpPost("items/{itemNo}/images")]
 		public async Task<IActionResult> AddImagesToItem(string itemNo, [FromForm] UploadImagesDto? dto)
@@ -197,13 +185,19 @@ namespace AlmutasaweqCatalog.Controllers
 		/// <summary>
 		/// Delete multiple item images.
 		/// </summary>
-		[HttpDelete("items/{itemNo}/images")]
+		[HttpPost("items/{itemNo}/images/delete")]
 		public async Task<IActionResult> DeleteItemImages(string itemNo, [FromBody] List<string>? imageNames)
 		{
-			if (string.IsNullOrWhiteSpace(itemNo) || imageNames == null || imageNames.Count == 0)
-				return BadRequest("Invalid request data.");
+            Console.WriteLine("🔍 Received imageNames: " + imageNames);
 
-			try
+            if (string.IsNullOrWhiteSpace(itemNo) || imageNames == null || imageNames.Count == 0)
+			{
+                Console.WriteLine($"Received images: {JsonSerializer.Serialize(imageNames)}");
+                return BadRequest("Invalid request data.");
+
+            }
+
+            try
 			{
 				await _itemServices.DeleteItemImagesAsync(itemNo, imageNames);
 				return Ok("Selected images deleted successfully.");

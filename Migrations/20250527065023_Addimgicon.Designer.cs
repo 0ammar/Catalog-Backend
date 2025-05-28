@@ -4,6 +4,7 @@ using Backend.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(CatalogContext))]
-    partial class CatalogContextModelSnapshot : ModelSnapshot
+    [Migration("20250527065023_Addimgicon")]
+    partial class Addimgicon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,10 +201,20 @@ namespace Backend.Migrations
                             Id = "4",
                             Code = "F",
                             CreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IconPath = "/StaticFiles/Focused-icon.png",
+                            IconPath = "/StaticFiles/focused-icon.png",
                             IsDeleted = false,
                             LookupTypeId = "1",
                             Name = "FocusedItem"
+                        },
+                        new
+                        {
+                            Id = "5",
+                            Code = "V",
+                            CreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IconPath = "/StaticFiles/star-icon.png",
+                            IsDeleted = false,
+                            LookupTypeId = "1",
+                            Name = "FavouriteItem"
                         });
                 });
 

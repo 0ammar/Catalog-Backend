@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(CatalogContext))]
-    [Migration("20250506114103_Sync_StatusId_Type")]
-    partial class Sync_StatusId_Type
+    [Migration("20250527061850_AddFavStatusId")]
+    partial class AddFavStatusId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -205,6 +205,16 @@ namespace Backend.Migrations
                             IsDeleted = false,
                             LookupTypeId = "1",
                             Name = "FocusedItem"
+                        },
+                        new
+                        {
+                            Id = "5",
+                            Code = "V",
+                            CreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IconPath = "/StaticFiles/focused-icon.png",
+                            IsDeleted = false,
+                            LookupTypeId = "1",
+                            Name = "FavouriteItem"
                         });
                 });
 
